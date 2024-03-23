@@ -17,12 +17,15 @@ const SignUpPage = () => {
 			const response = await axios.post('http://localhost:5000/users', {
 				email: email,
 				password: password,
+				role: role
 			});
 			if(response.status == 202) {
 				alert('Email is already taken');
 			} else {
 				alert('Registration successful!');
+				window.location.href = '/login';
 			}
+
 		} catch (error) {
 		  console.error('Error during registration:', error);
 		  alert('Registration failed!');

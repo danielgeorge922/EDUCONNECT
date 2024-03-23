@@ -16,7 +16,21 @@ const LoginPage = () => {
               password: password,
             });
             alert("Login Succesful");
-            navigate('/student');
+            const response = await axios.post('http://localhost:5000/users/role', {
+                email: email,
+            });
+            const role = response.data;
+
+            if (role === 'student') {
+                window.location.href = '/student';
+            } else if (role === 'professor') {
+                window.location.href = '/teacher';
+            } else if (role === 'ta') {
+                window.location.href = '/ta';
+            } else {
+                alert('Unknown role');
+            }
+
           } catch (error) {
             alert('Login failed!');
           }

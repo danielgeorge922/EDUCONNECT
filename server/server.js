@@ -135,6 +135,19 @@ app.get('/profile', (req, res) => {
   }
 });
 
+app.post('/users/role', async (req, res) => {
+  try {
+    const user = await User.findOne({ email: req.body.email });
+    if (!user) {
+      return res.status(400).send('Cannot find user');
+    }
+    res.status(200).send(user.role);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
 app.post('/conversation', async (req, res) => {
   try {
     if (!req.session.userId) {
