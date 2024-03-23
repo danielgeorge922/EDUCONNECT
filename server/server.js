@@ -37,9 +37,23 @@ const db = mongoose.connection;
 const userSchema = new mongoose.Schema({
   name: String,
   password: String,
+  role: String,
+  questions: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Question'
+  }]
+});
+
+const questionSchema = new mongoose.Schema({
+  id: { type: Number },
+  user: String,
+  question: String,
+  answer: String,
+  timestamp: { type: Date, default: Date.now },
 });
 
 const User = mongoose.model('User', userSchema);
+const Question = mongoose.model('Question', questionSchema);
 
 app.use(session({
   secret: 'secret', 
@@ -60,6 +74,7 @@ app.post('/users', async (req, res) => {
     const newUser = new User({
       name: req.body.name,
       password: hashedPassword,
+      role: req.body.role
     });
     await newUser.save();
     res.status(201).send();
@@ -121,6 +136,30 @@ app.get('/users/profile', async (req, res) => {
     res.status(500).send('Internal Server Error');
   }
 });
+
+app.post('/question', async (req, res) => {
+  try {
+    if (!req.session.userId) {
+      return res.status(401).send('Unauthorized');
+    }
+    const user = await User.findById(req.session.userId);
+    const question = new Question({
+      id: req.body.id,
+      user: req.body.user,
+      question: req.body.question,
+      answer: null,
+    });
+    await question.save();
+    user.questions.push(question);
+    user.role = "Student";
+    res.json(user);
+    // res.status(201).send();
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

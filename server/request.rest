@@ -30,3 +30,16 @@ Content-Type: application/json
 ###
 //logout
 POST http://localhost:5000/users/logout
+
+###
+
+//question
+POST http://localhost:5000/question
+Content-Type: application/json
+
+{
+    "id": 1,
+    "user": "admin",
+    "question": "Is this real",
+    "answer": "admin"
+}
