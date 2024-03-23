@@ -1,10 +1,16 @@
-import './App.css'
+import {BrowserRouter as Router, Route,Routes} from 'react-router-dom'
+import * as Pages from './pages'
 
 function App() {
   return (
-    <>
-      <h1>Hey</h1>
-    </>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Pages.Home />} />
+        <Route path="*" element={<Pages.NotFound />} />
+        <Route path="/login" element={<Pages.LoginPage />} />
+        <Route path="/signup" element={<Pages.SignUpPage />} />
+      </Routes>
+    </Router>
   )
 }
 
