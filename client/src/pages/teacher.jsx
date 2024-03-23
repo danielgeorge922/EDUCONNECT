@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Modal from '../components/modal';
 
-const StudentDashboard = () => {
+const TeacherDashboard = () => {
 	const [textBoxValue, setTextBoxValue] = useState('');
 	const [isOpen, setIsOpen] = useState(false);
 
@@ -14,14 +14,12 @@ const StudentDashboard = () => {
 	};
 
 	const signOut = async () => {
-		const response = await axios.post('http://localhost:5000/users/logout', {
-			name: email,
-			password: password,
-		});
+		// Your sign out logic here
 	};
 
 	return (
 		<>
+			{/* Navigation */}
 			<nav className="fixed top-0 z-50 w-full bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
 				<div className="px-3 py-3 lg:px-5 lg:pl-3">
 					<div className="flex items-center justify-between">
@@ -66,7 +64,11 @@ const StudentDashboard = () => {
 						</div>
 						<div className="flex items-center">
 							<div className=" items-center ms-3">
-								<a onClick={signOut} className=" flex cursor-pointer space-x-1" href="/login">
+								<a
+									onClick={signOut}
+									className=" flex cursor-pointer space-x-1"
+									href="/login"
+								>
 									<h1
 										type="button"
 										className="flex text-M rounded-full"
@@ -107,6 +109,8 @@ const StudentDashboard = () => {
 					</div>
 				</div>
 			</nav>
+
+			{/* Sidebar */}
 			<aside
 				id="logo-sidebar"
 				className="fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform -translate-x-full bg-white border-r border-gray-200 sm:translate-x-0 dark:bg-gray-800 dark:border-gray-700"
@@ -114,23 +118,65 @@ const StudentDashboard = () => {
 			>
 				<div className="h-full px-3 pb-4 overflow-y-auto bg-white dark:bg-gray-800">
 					<ul className="space-y-2 font-medium">
-						<li>Bruh Moment</li>
-						<li>Bruh Moment</li>
+						<label
+							class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+							for="file_input"
+						>
+							Upload Syllabus
+						</label>
+						<input
+							class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
+							id="file_input"
+							type="file"
+						/>
+						<div>
+							<label
+								for="small-input"
+								class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+							>
+								Enter TA
+							</label>
+							<input
+								type="text"
+								id="small-input"
+								class="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+							/>
+						</div>
+						<ul class="max-w-md space-y-1 text-gray-500 list-disc list-inside dark:text-gray-400">
+							{' '}
+							<a className="text-black ">Current TA's</a>
+							<li>Andrew Laskin</li>
+							<li>Andrew Laskin</li>
+							<li>Andrew Laskin</li>
+						</ul>
+                        <line class="block w-full h-0.5 bg-gray-200 dark:bg-gray-700"></line>
+						<li>Student Messages</li>
+                        <ul class="max-w-md space-y-1 text-gray-500 list-disc list-inside dark:text-gray-400">
+                            <li>Andrew Laskin</li>
+                            <li>Andrew Laskin</li>
+                            <li>Andrew Laskin</li>
+                        </ul>
 					</ul>
 				</div>
 			</aside>
+
+			{/* Main content */}
 			<div className="p-4 sm:ml-64">
+				{/* Main content area */}
 				<div
 					className="p-4 border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700 mt-14 flex flex-col-reverse"
 					style={{ height: 'calc(100vh - 60px)' }}
 				>
 					<div className="flex items-center justify-between">
+						{/* Text area for teacher input */}
 						<textarea
 							className="text-black left-4 w-full h-16 border border-gray-200 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
 							placeholder="Type something here..."
 							value={textBoxValue}
 							onChange={(e) => setTextBoxValue(e.target.value)}
 						></textarea>
+
+						{/* Submit button */}
 						<button
 							type="button"
 							className="text-white bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center dark:bg-blue-600 dark:focus:ring-blue-800"
@@ -146,4 +192,4 @@ const StudentDashboard = () => {
 	);
 };
 
-export default StudentDashboard;
+export default TeacherDashboard;
