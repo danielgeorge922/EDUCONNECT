@@ -7,7 +7,6 @@ const MongoStore = require('connect-mongo')(session);
 const uuidv4 = require('uuid').v4;
 
 const MONGODB_PASS = "QSSm7bp22JU2KUV2";
-// const sessionSecret = B53Fttq3wRgowzV835RZ9GpdXiAzan;
 
 if (!MONGODB_PASS) {
   console.error('MongoDB password is not provided in the environment variable.');
@@ -36,25 +35,26 @@ mongoose
 const db = mongoose.connection;
 
 const userSchema = new mongoose.Schema({
-  name: String,
+  email: String,
   password: String,
   role: String,
-  questions: [{
+  conversations: [{
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Question'
+    ref: 'Conversation'
   }]
 });
 
-const questionSchema = new mongoose.Schema({
+const conversationSchema = new mongoose.Schema({
   id: { type: Number },
   user: String,
-  question: String,
-  answer: String,
-  timestamp: { type: Date, default: Date.now },
+  messages: [{
+    text: String,
+    timestamp: { type: Date, default: Date.now }
+  }]
 });
 
 const User = mongoose.model('User', userSchema);
-const Question = mongoose.model('Question', questionSchema);
+const Conversation = mongoose.model('Question', conversationSchema);
 
 app.use(session({
   secret: 'secret', 
@@ -71,17 +71,14 @@ const sessions = {};
 
 app.post('/users', async (req, res) => {
   try {
-    const user = await User.findOne({ name: req.body.name });
+    const user = await User.findOne({ email: req.body.email });
     if(user) {
-      res.status(203).send('Email Taken');
-    }
-    if(req.body.name.substr(-8).localeCompare("@ufl.edu") != 0) {
-      res.status(202).send('Invalid Email');
+      res.status(202).send('Email Taken');
     }
 
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
     const newUser = new User({
-      name: req.body.name,
+      email: req.body.email,
       password: hashedPassword,
       role: req.body.role
     });
@@ -95,7 +92,7 @@ app.post('/users', async (req, res) => {
 
 app.post('/users/login', async (req, res) => {
   try {
-    const user = await User.findOne({ name: req.body.name });
+    const user = await User.findOne({ email: req.body.email });
     if (!user) {
       return res.status(400).send('Cannot find user');
     }
@@ -103,7 +100,7 @@ app.post('/users/login', async (req, res) => {
     const isPasswordValid = await bcrypt.compare(req.body.password, user.password);
     if (isPasswordValid) {
       const sessionId = uuidv4();
-      req.session.userId = user._id; 
+      req.session.userId = user._id;
       sessions[sessionId] = user;
       res.set('Set-Cookie', `sessionId=${sessionId}`);
       res.send('Success');
@@ -128,42 +125,46 @@ app.post('/users/logout', (req, res) => {
   });
 });
 
-app.get('/users/profile', async (req, res) => {
+app.get('/profile', (req, res) => {
+  if (req.session.user) {
+    console.log(req.session.user);
+    const email = req.session.user.email;
+    res.status(200).json({ data: email}); 
+  } else {
+    res.status(401).json({ error: 'Unauthorized' });
+  }
+});
+
+app.post('/conversation', async (req, res) => {
   try {
-    if (req.session && req.session.userId) {
-      const user = await User.findById(req.session.userId);
-      if (user) {
-        res.json({ name: user.name });
-      } else {
-        res.status(404).send('User not found');
-      }
-    } else {
-      res.status(401).send('Unauthorized');
+    if (!req.session.userId) {
+      return res.status(401).send('Unauthorized');
     }
+    const user = await User.findById(req.session.userId);
+    const conversation = new Conversation({
+      id: req.body.id,
+      user: req.body.user
+    });
+    await conversation.save();
+    conversation.push({
+      text: req.body.text
+    })
+    user.conversations.push(conversation);
+    res.status(201).send();
   } catch (error) {
     console.error(error);
     res.status(500).send('Internal Server Error');
   }
 });
 
-app.post('/question', async (req, res) => {
+app.post('/message', async (req, res) => {
   try {
     if (!req.session.userId) {
       return res.status(401).send('Unauthorized');
     }
     const user = await User.findById(req.session.userId);
-    const question = new Question({
-      id: req.body.id,
-      user: req.body.user,
-      question: req.body.question,
-      answer: null,
-    });
-    await question.save();
-    user.questions.push(question);
-    res.status(201).send();
-  } catch (error) {
-    console.error(error);
-    res.status(500).send('Internal Server Error');
+  } catch {
+    
   }
 });
 

@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import Modal from '../components/modal';
 
 const StudentDashboard = () => {
 	const [textBoxValue, setTextBoxValue] = useState('');
 	const [isOpen, setIsOpen] = useState(false);
+	const [userEmail, setUserEmail] = useState('');
 
 	const submitText = () => {
 		setIsOpen(true);
@@ -19,6 +21,24 @@ const StudentDashboard = () => {
 			password: password,
 		});
 	};
+	
+	useEffect(() => {
+        const fetchEmail = async () => {
+            try {
+                const response = await axios.get('/profile');
+				console.log(response);
+				if (!response.ok) {
+					throw new Error('Failed to fetch email');
+				}
+				const data = await response.json();
+				setUserEmail(data.email);
+            } catch (error) {
+                console.error('Error fetching email:', error);
+            }
+        };
+
+        fetchEmail();
+    }, []);
 
 	return (
 		<>

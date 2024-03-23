@@ -1,19 +1,22 @@
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const LoginPage = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const navigate = useNavigate();
 
     const handleLogin = async (event) => {
         try {
             event.preventDefault();
             await axios.post('http://localhost:5000/users/login', {
-              name: email,
+              email: email,
               password: password,
             });
             alert("Login Succesful");
+            navigate('/student');
           } catch (error) {
             alert('Login failed!');
           }

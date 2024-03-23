@@ -9,13 +9,16 @@ const SignUpPage = () => {
 
 	const handleSignUp = async () => {
 		try {
+			if(email.substr(-8).localeCompare("@ufl.edu") != 0) {
+				alert('Invalid Email');
+				throw error();
+			}
+		  
 			const response = await axios.post('http://localhost:5000/users', {
-				name: email,
+				email: email,
 				password: password,
 			});
 			if(response.status == 202) {
-				alert('Invalid Email');
-			} else if(response.status == 203) {
 				alert('Email is already taken');
 			} else {
 				alert('Registration successful!');
