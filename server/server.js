@@ -1,5 +1,13 @@
 // Import required modules
 const express = require('express');
+const mongoose = require('mongoose');
+
+const MONGODB_PASS = process.env.MongoDBPass;
+
+if (!MONGODB_PASS) {
+  console.error('MongoDB password is not provided in the environment variable.');
+  process.exit(1); // Exit the process if the password is not provided
+}
 
 // Create an Express application
 const app = express();
