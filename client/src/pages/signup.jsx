@@ -1,16 +1,23 @@
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
+import axios from 'axios';
 
 const SignUpPage = () => {
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
 	const [role, setRole] = useState('');
 
-	const handleSignUp = () => {
-		// Handle signup logic here
-		console.log('Email:', email);
-		console.log('Password:', password);
-		console.log('Role:', role);
+	const handleSignUp = async () => {
+		try {
+			await axios.post('http://localhost:5000/users', {
+				name: email,
+				password: password,
+			});
+			alert('Registration successful!');
+		} catch (error) {
+		  console.error('Error during registration:', error);
+		  alert('Registration failed!');
+		}
 	};
 
 	return (
