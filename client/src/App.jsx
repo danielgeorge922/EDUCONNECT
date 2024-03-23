@@ -6,7 +6,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<Pages.Home />} />
-        <Route path="*" element={<Pages.NotFound />} />
+        <Route path="*" element={<Pages.NotFoundPage />} />
         <Route path="/login" element={<Pages.LoginPage />} />
         <Route path="/signup" element={<Pages.SignUpPage />} />
       </Routes>
