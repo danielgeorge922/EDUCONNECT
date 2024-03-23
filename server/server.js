@@ -7,6 +7,7 @@ const MongoStore = require('connect-mongo')(session);
 const uuidv4 = require('uuid').v4;
 
 const MONGODB_PASS = "QSSm7bp22JU2KUV2";
+// const sessionSecret = B53Fttq3wRgowzV835RZ9GpdXiAzan;
 
 if (!MONGODB_PASS) {
   console.error('MongoDB password is not provided in the environment variable.');
@@ -70,6 +71,14 @@ const sessions = {};
 
 app.post('/users', async (req, res) => {
   try {
+    const user = await User.findOne({ name: req.body.name });
+    if(user) {
+      res.status(203).send('Email Taken');
+    }
+    if(req.body.name.substr(-8).localeCompare("@ufl.edu") != 0) {
+      res.status(202).send('Invalid Email');
+    }
+
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
     const newUser = new User({
       name: req.body.name,
@@ -151,9 +160,7 @@ app.post('/question', async (req, res) => {
     });
     await question.save();
     user.questions.push(question);
-    user.role = "Student";
-    res.json(user);
-    // res.status(201).send();
+    res.status(201).send();
   } catch (error) {
     console.error(error);
     res.status(500).send('Internal Server Error');

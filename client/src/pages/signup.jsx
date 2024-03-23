@@ -9,11 +9,17 @@ const SignUpPage = () => {
 
 	const handleSignUp = async () => {
 		try {
-			await axios.post('http://localhost:5000/users', {
+			const response = await axios.post('http://localhost:5000/users', {
 				name: email,
 				password: password,
 			});
-			alert('Registration successful!');
+			if(response.status == 202) {
+				alert('Invalid Email');
+			} else if(response.status == 203) {
+				alert('Email is already taken');
+			} else {
+				alert('Registration successful!');
+			}
 		} catch (error) {
 		  console.error('Error during registration:', error);
 		  alert('Registration failed!');
