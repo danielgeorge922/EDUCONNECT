@@ -7,6 +7,7 @@ const StudentDashboard = () => {
 	const [isOpen, setIsOpen] = useState(false);
 	const [userEmail, setUserEmail] = useState('');
 	const [firstMessages, setFirstMessages] = useState([]);
+	const [activeConvo, setActiveConvo] = useState('');
 
 	const submitText = () => {
 		setIsOpen(true);
@@ -14,6 +15,14 @@ const StudentDashboard = () => {
 
 	const closeModal = () => {
 		setIsOpen(false);
+	};
+
+	const chatClick = (conversation) => {
+		if (conversation && conversation._id) {
+			console.log('Clicked conversation id:', conversation._id);
+		} else {
+			console.error('Conversation or conversation id is undefined');
+		}
 	};
 
 	const newConvo = async () => {
@@ -49,7 +58,7 @@ const StudentDashboard = () => {
 					throw new Error('Failed to fetch conversations');
 				}
 				const data = await response.json();
-		
+
 				const messages = data.conversations.map((conversation) => {
 					if (conversation.messages && conversation.messages.length > 0) {
 						return {
@@ -60,7 +69,7 @@ const StudentDashboard = () => {
 						return { text: '' }; // or any default value you prefer if there are no messages
 					}
 				});
-		
+
 				setFirstMessages(messages);
 				console.log('done with messages');
 				console.log(messages);
@@ -184,9 +193,11 @@ const StudentDashboard = () => {
 			>
 				<div className="h-full px-3 pb-4 overflow-y-auto bg-white dark:bg-gray-800">
 					<ul className="space-y-2 font-medium">
-						<button onClick={newConvo}>NEW CONVO</button>
+						<button onClick={newConvo}>New Conversation</button>
 						{firstMessages.map((conversation, idx) => (
-							<li key={idx}>{conversation.text}</li>
+							<a key={idx} onClick={() => chatClick(conversation)}>
+								<li>{conversation.text}</li>
+							</a>
 						))}
 					</ul>
 				</div>
