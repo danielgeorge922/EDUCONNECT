@@ -34,28 +34,28 @@ mongoose
 
 const db = mongoose.connection;
 
-const userSchema = new mongoose.Schema({
-  email: String,
-  password: String,
-  role: String,
-  conversations: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Conversation'
-  }]
+const messageSchema = new mongoose.Schema({
+  user: String,
+  text: String,
+  timestamp: { type: Date, default: Date.now }
 });
 
 const conversationSchema = new mongoose.Schema({
   id: { type: Number },
   user: String,
-  messages: [{
-    user: String,
-    text: String,
-    timestamp: { type: Date, default: Date.now }
-  }]
+  messages: [messageSchema]
+});
+
+const userSchema = new mongoose.Schema({
+  email: String,
+  password: String,
+  role: String,
+  conversations: [conversationSchema]
 });
 
 const User = mongoose.model('User', userSchema);
 const Conversation = mongoose.model('Conversation', conversationSchema);
+const Message = mongoose.model('Message', messageSchema);
 
 app.use(session({
   secret: 'secret', 
@@ -168,11 +168,26 @@ app.post('/conversation', async (req, res) => {
       id: req.body.id,
       user: req.body.user
     });
-    conversation.messages.push({
-      text: req.body.text
+    const message = new Message({
+      text: req.body.text,
+      user: req.body.user
     });
-    user.conversations.push(conversation);
+
+    await message.save()
+    console.log("\nconversation:")
+    console.log(conversation);
+
+    conversation.messages.push(message);
     await conversation.save();
+    console.log("\nconversation:")
+    console.log(conversation);
+
+    user.conversations.push(conversation);
+    console.log("\nuser.conversations[0]:")
+    console.log(user.conversations[0].messages);
+    await user.save();
+    // console.log(user.conversations[0]);
+
     res.status(201).send();
   } catch (error) {
     console.error(error);
@@ -195,7 +210,7 @@ app.post('/message', async (req, res) => {
 app.get('/conversations', async (req, res) => {
   try {
     if (req.session && req.session.userId) {
-      const user = await User.findById(req.session.userId).populate('conversations');
+      const user = await User.findById(req.session.userId);
       if (user) {
         res.json({ conversations: user.conversations });
       } else {

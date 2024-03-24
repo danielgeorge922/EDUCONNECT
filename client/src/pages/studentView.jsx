@@ -28,6 +28,7 @@ const StudentDashboard = () => {
                 withCredentials: true, // Include cookies in the request
             }
         );
+		console.log("done");
     };
 
     const signOut = async () => {
@@ -43,12 +44,17 @@ const StudentDashboard = () => {
                 const response = await fetch('http://localhost:5000/conversations', {
                     method: 'GET',
                     credentials: 'include',
-                });
+                }, {
+					withCredentials: true
+				});
+
                 if (!response.ok) {
                     throw new Error('Failed to fetch conversations');
                 }
                 const data = await response.json();
                 // Extract the first message from each conversation
+				console.log(data.conversations);
+				console.log(data.conversations.forEach(function(obj) { console.log(obj.id); }));
                 const messages = data.conversations.map(conversation => conversation.messages[0].text);
                 setFirstMessages(messages);
 				console.log("done with messages");
@@ -77,6 +83,10 @@ const StudentDashboard = () => {
 
         fetchEmail();
         fetchConversations();
+		
+		return() => {
+			console.log("cleaning up");
+		}
     }, []);
 
 	return (
