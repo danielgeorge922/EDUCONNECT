@@ -225,6 +225,23 @@ app.get('/conversations', async (req, res) => {
   }
 });
 
+app.get('/conversations/:id/messages', async (req, res) => {
+  // try {
+  //     const conversationId = req.params.id;
+
+  //     const conversation = await Conversation.findById(conversationId);
+
+  //     if (!conversation) {
+  //         return res.status(404).json({ message: 'Conversation not found' });
+  //     }
+
+  //     res.json(conversation);
+  // } catch (error) {
+  //     console.error(error);
+  //     res.status(500).json({ message: 'Internal Server Error' });
+  // }
+});
+
 app.get('/users/professors', async (req, res) => {
   try {
     const professors = await User.find({ role: 'professor' });
