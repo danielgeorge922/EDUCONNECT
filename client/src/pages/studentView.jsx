@@ -3,17 +3,17 @@ import axios from 'axios';
 import Modal from '../components/modal';
 
 const StudentDashboard = () => {
-	const [textBoxValue, setTextBoxValue] = useState('');
-	const [isOpen, setIsOpen] = useState(false);
-	const [userEmail, setUserEmail] = useState('');
+  const [textBoxValue, setTextBoxValue] = useState('');
+  const [isOpen, setIsOpen] = useState(false);
+  const [userEmail, setUserEmail] = useState('');
 
-	const submitText = () => {
-		setIsOpen(true);
-	};
+  const submitText = () => {
+    setIsOpen(true);
+  };
 
-	const closeModal = () => {
-		setIsOpen(false);
-	};
+  const closeModal = () => {
+    setIsOpen(false);
+  };
 
 	const signOut = async () => {
 		const response = await axios.post('http://localhost:5000/users/logout', {

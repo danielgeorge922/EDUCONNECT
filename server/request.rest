@@ -26,7 +26,7 @@ Content-Type: application/json
 ###
 
 //Username
-GET http://localhost:5000/users/profile
+GET http://localhost:5000/profile
 Content-Type: application/json
 
 ###
@@ -36,12 +36,11 @@ POST http://localhost:5000/users/logout
 ###
 
 //question
-POST http://localhost:5000/question
+POST http://localhost:5000/conversation
 Content-Type: application/json
 
 {
     "id": 1,
     "user": "admin",
-    "question": "Is this real",
-    "answer": "admin"
+    "text": "help!!"
 }
