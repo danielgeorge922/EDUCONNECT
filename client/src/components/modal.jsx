@@ -3,6 +3,7 @@ import axios from 'axios';
 
 const Modal = ({ isOpen, onClose }) => {
     const [professors, setProfessors] = useState([]);
+    const [teacherAssistants, setTeacherAssistants] = useState([]);
     const [selectedOption1, setSelectedOption1] = useState('');
     const [selectedOption2, setSelectedOption2] = useState('');
 
@@ -13,10 +14,18 @@ const Modal = ({ isOpen, onClose }) => {
                 setProfessors(response.data);
             } catch (error) {
                 console.error('Error fetching professors:', error);
-                // Handle error
             }
         };
-
+        const fetchTeacherAssistants = async () => {
+            try {
+                const response = await axios.get('http://localhost:5000/users/tas');
+                setTeacherAssistants(response.data);
+            }
+            catch (error) {
+                console.error('Error fetching teacher assistants:', error);
+            }
+        }
+        fetchTeacherAssistants();
         fetchProfessors();
     }, []);
 
@@ -60,7 +69,9 @@ const Modal = ({ isOpen, onClose }) => {
                                 onChange={handleOption2Change}
                             >
                                 <option value="">Select Option</option>
-                                {/* Add options here */}
+                                {teacherAssistants.map(teacherAssistant => (
+                                    <option key={teacherAssistant._id} value={teacherAssistant._id}>{teacherAssistant.email}</option>
+                                ))}
                             </select>
                         </div>
                         <div className="flex justify-end">

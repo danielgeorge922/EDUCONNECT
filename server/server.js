@@ -195,7 +195,7 @@ app.post('/message', async (req, res) => {
 app.get('/conversations', async (req, res) => {
   try {
     if (req.session && req.session.userId) {
-      const user = await User.findById(req.session.userId);
+      const user = await User.findById(req.session.userId).populate('conversations');
       if (user) {
         res.json({ conversations: user.conversations });
       } else {
@@ -204,7 +204,6 @@ app.get('/conversations', async (req, res) => {
     } else {
       res.status(401).send('Unauthorized');
     }
-  
   } catch (error) {
     console.error(error);
     res.status(500).send('Internal Server Error');
@@ -217,6 +216,16 @@ app.get('/users/professors', async (req, res) => {
     res.status(200).json(professors);
   } catch (error) {
     console.error('Error fetching professors:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+app.get('/users/tas', async (req, res) => {
+  try {
+    const teacherAssistants = await User.find({ role: 'ta' });
+    res.status(200).json(teacherAssistants);
+  } catch (error) {
+    console.error('Error fetching teacher assistants:', error);
     res.status(500).send('Internal Server Error');
   }
 });
