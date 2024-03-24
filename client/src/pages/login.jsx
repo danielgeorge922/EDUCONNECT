@@ -12,6 +12,8 @@ const LoginPage = () => {
             await axios.post('http://localhost:5000/users/login', {
               email: email,
               password: password,
+            }, {
+              withCredentials: true
             });
             alert("Login Succesful");
             const response = await axios.post('http://localhost:5000/users/role', {

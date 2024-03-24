@@ -48,13 +48,14 @@ const conversationSchema = new mongoose.Schema({
   id: { type: Number },
   user: String,
   messages: [{
+    user: String,
     text: String,
     timestamp: { type: Date, default: Date.now }
   }]
 });
 
 const User = mongoose.model('User', userSchema);
-const Conversation = mongoose.model('Question', conversationSchema);
+const Conversation = mongoose.model('Conversation', conversationSchema);
 
 app.use(session({
   secret: 'secret', 
@@ -125,13 +126,22 @@ app.post('/users/logout', (req, res) => {
   });
 });
 
-app.get('/profile', (req, res) => {
-  if (req.session.user) {
-    console.log(req.session.user);
-    const email = req.session.user.email;
-    res.status(200).json({ data: email}); 
-  } else {
-    res.status(401).json({ error: 'Unauthorized' });
+app.get('/users/profile', async (req, res) => {
+  try {
+    if (req.session && req.session.userId) {
+      const user = await User.findById(req.session.userId);
+      if (user) {
+        res.json({ email: user.email });
+      } else {
+        res.status(404).send('User not found');
+      }
+    } else {
+      res.status(401).send('Unauthorized');
+    }
+  
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Internal Server Error');
   }
 });
 

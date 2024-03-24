@@ -17,7 +17,7 @@ const StudentDashboard = () => {
 
 	const signOut = async () => {
 		const response = await axios.post('http://localhost:5000/users/logout', {
-			name: email,
+			email: email,
 			password: password,
 		});
 	};
@@ -25,8 +25,10 @@ const StudentDashboard = () => {
 	useEffect(() => {
         const fetchEmail = async () => {
             try {
-                const response = await axios.get('/profile');
-				console.log(response);
+                const response = await fetch('http://localhost:5000/users/profile', {
+					method: 'GET',
+					credentials: 'include',
+				});
 				if (!response.ok) {
 					throw new Error('Failed to fetch email');
 				}
@@ -38,6 +40,9 @@ const StudentDashboard = () => {
         };
 
         fetchEmail();
+		return () => {
+			console.log("clean up");
+		}
     }, []);
 
 	return (
@@ -94,7 +99,7 @@ const StudentDashboard = () => {
 										data-dropdown-toggle="dropdown-user"
 									>
 										<span className="sr-only">Open user menu</span>
-										Andrew Laskin
+										{userEmail}
 									</h1>
 									<img
 										src="https://upload.wikimedia.org/wikipedia/commons/e/e9/Octicons-sign-out.svg"
