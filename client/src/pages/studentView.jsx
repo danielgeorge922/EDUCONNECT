@@ -21,12 +21,7 @@ const StudentDashboard = () => {
 	};
 
 	const chatClick = (idx) => {
-		const conversationId = messagesID[idx];
-		if (conversationId) {
-			console.log('Clicked conversation id:', conversationId);
-		} else {
-			console.error('Conversation id is undefined');
-		}
+		const conversationId = messagesID[idx][idx];
 		setIsActive(true);
 		setActiveConvo(conversationId);
 	};
@@ -35,17 +30,20 @@ const StudentDashboard = () => {
 		if (isActive) {
 			const fetchConvoMessages = async () => {
 				try {
-					const response = await fetch(`http://localhost:5000/conversations/${activeConvo}/messages`, {
-						method: 'GET',
-						credentials: 'include',
-					});
+					const response = await fetch(
+						`http://localhost:5000/conversations/${activeConvo}/messages`,
+						{
+							method: 'GET',
+							credentials: 'include',
+						}
+					);
 					if (!response.ok) {
 						throw new Error('Failed to fetch conversation messages');
 					}
+					//TODO:This may be worth looking into ngl
 					const data = await response.json();
-					setConvoMessages(data.messages);
-					console.log('done with conversation messages');
-					console.log(data.messages);
+					console.log(data.text);
+					setConvoMessages(data);
 				} catch (error) {
 					console.error('Error fetching conversation messages:', error);
 				}
@@ -53,10 +51,6 @@ const StudentDashboard = () => {
 			fetchConvoMessages();
 		}
 	}, [isActive, activeConvo]);
-	
-
-
-	
 
 	const newConvo = async () => {
 		const response = await axios.post(
@@ -108,7 +102,7 @@ const StudentDashboard = () => {
 							[index]: conversation._id,
 						};
 					} else {
-						return { [index]: '' }; 
+						return { [index]: '' };
 					}
 				});
 				setMessagesID(messagesID);
@@ -237,7 +231,7 @@ const StudentDashboard = () => {
 					<ul className="space-y-2 font-medium">
 						<button onClick={newConvo}>New Conversation</button>
 						{firstMessages.map((conversation, idx) => (
-							<a key={idx} onClick={() => chatClick(idx)}>
+							<a key={idx} onClick={() => chatClick(idx)} className="hover:underline cursor-pointer">
 								<li>{conversation.text}</li>
 							</a>
 						))}
@@ -263,6 +257,17 @@ const StudentDashboard = () => {
 						>
 							Submit
 						</button>
+					</div>
+					<div>
+						<h1>Conversation Messages:</h1>
+						<ul>
+								<li >
+									<p>User: {convoMessages.user}</p>
+									<p>Text: {convoMessages.text}</p>
+									<p>Timestamp: {convoMessages.timestamp}</p>
+								</li>
+	
+						</ul>
 					</div>
 				</div>
 			</div>

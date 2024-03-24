@@ -44,3 +44,8 @@ Content-Type: application/json
     "user": "admin",
     "text": "help!!"
 }
+
+###
+
+GET http://localhost:5000/conversations/65ffd4ab07b3623ae80dfcff/messages
+Content-Type: application/json
