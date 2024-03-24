@@ -1,9 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Modal from '../components/modal';
+import axios from 'axios';
 
 const TeacherDashboard = () => {
 	const [textBoxValue, setTextBoxValue] = useState('');
 	const [isOpen, setIsOpen] = useState(false);
+	const [conversations, setConversations] = useState([]);
+
+	useEffect(() => {
+		fetchConversations();
+	}, []);
+
+	const fetchConversations = async () => {
+		try {
+			const response = await axios.get('http://localhost:5000/conversations');
+			setConversations(response.data);
+		} catch (error) {
+			console.error('Error fetching conversations:', error);
+		}
+	};
 
 	const submitText = () => {
 		setIsOpen(true);
@@ -14,12 +29,14 @@ const TeacherDashboard = () => {
 	};
 
 	const signOut = async () => {
-		// Your sign out logic here
+		const response = await axios.post('http://localhost:5000/users/logout', {
+			name: email,
+			password: password,
+		});
 	};
 
 	return (
 		<>
-			{/* Navigation */}
 			<nav className="fixed top-0 z-50 w-full bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
 				<div className="px-3 py-3 lg:px-5 lg:pl-3">
 					<div className="flex items-center justify-between">
@@ -149,26 +166,28 @@ const TeacherDashboard = () => {
 							<li>Andrew Laskin</li>
 							<li>Andrew Laskin</li>
 						</ul>
-                        <line class="block w-full h-0.5 bg-gray-200 dark:bg-gray-700"></line>
+						<line class="block w-full h-0.5 bg-gray-200 dark:bg-gray-700"></line>
 						<li>Student Messages</li>
-                        <ul class="max-w-md space-y-1 text-gray-500 list-disc list-inside dark:text-gray-400">
-                            <li>Andrew Laskin</li>
-                            <li>Andrew Laskin</li>
-                            <li>Andrew Laskin</li>
-                        </ul>
+						<ul className="max-w-md space-y-1 text-gray-500 list-disc list-inside dark:text-gray-400">
+							{conversations.length === 0 ? (
+								<li>No conversations at this time</li>
+							) : (
+								conversations.map((conversation) => (
+									<li key={conversation._id}>{conversation.user}</li>
+								))
+							)}
+						</ul>
 					</ul>
 				</div>
 			</aside>
 
 			{/* Main content */}
 			<div className="p-4 sm:ml-64">
-				{/* Main content area */}
 				<div
 					className="p-4 border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700 mt-14 flex flex-col-reverse"
 					style={{ height: 'calc(100vh - 60px)' }}
 				>
 					<div className="flex items-center justify-between">
-						{/* Text area for teacher input */}
 						<textarea
 							className="text-black left-4 w-full h-16 border border-gray-200 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
 							placeholder="Type something here..."
