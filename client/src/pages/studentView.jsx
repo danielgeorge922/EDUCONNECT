@@ -8,7 +8,9 @@ const StudentDashboard = () => {
 	const [userEmail, setUserEmail] = useState('');
 	const [firstMessages, setFirstMessages] = useState([]);
 	const [messagesID, setMessagesID] = useState([]);
+	const [isActive, setIsActive] = useState(false);
 	const [activeConvo, setActiveConvo] = useState('');
+	const [convoMessages, setConvoMessages] = useState([]);
 
 	const submitText = () => {
 		setIsOpen(true);
@@ -25,7 +27,36 @@ const StudentDashboard = () => {
 		} else {
 			console.error('Conversation id is undefined');
 		}
+		setIsActive(true);
+		setActiveConvo(conversationId);
 	};
+
+	useEffect(() => {
+		if (isActive) {
+			const fetchConvoMessages = async () => {
+				try {
+					const response = await fetch(`http://localhost:5000/conversations/${activeConvo}/messages`, {
+						method: 'GET',
+						credentials: 'include',
+					});
+					if (!response.ok) {
+						throw new Error('Failed to fetch conversation messages');
+					}
+					const data = await response.json();
+					setConvoMessages(data.messages);
+					console.log('done with conversation messages');
+					console.log(data.messages);
+				} catch (error) {
+					console.error('Error fetching conversation messages:', error);
+				}
+			};
+			fetchConvoMessages();
+		}
+	}, [isActive, activeConvo]);
+	
+
+
+	
 
 	const newConvo = async () => {
 		const response = await axios.post(
