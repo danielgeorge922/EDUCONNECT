@@ -7,6 +7,7 @@ const StudentDashboard = () => {
 	const [isOpen, setIsOpen] = useState(false);
 	const [userEmail, setUserEmail] = useState('');
 	const [firstMessages, setFirstMessages] = useState([]);
+	const [messagesID, setMessagesID] = useState([]);
 	const [activeConvo, setActiveConvo] = useState('');
 
 	const submitText = () => {
@@ -17,11 +18,12 @@ const StudentDashboard = () => {
 		setIsOpen(false);
 	};
 
-	const chatClick = (conversation) => {
-		if (conversation && conversation._id) {
-			console.log('Clicked conversation id:', conversation._id);
+	const chatClick = (idx) => {
+		const conversationId = messagesID[idx];
+		if (conversationId) {
+			console.log('Clicked conversation id:', conversationId);
 		} else {
-			console.error('Conversation or conversation id is undefined');
+			console.error('Conversation id is undefined');
 		}
 	};
 
@@ -69,7 +71,16 @@ const StudentDashboard = () => {
 						return { text: '' }; // or any default value you prefer if there are no messages
 					}
 				});
-
+				const messagesID = data.conversations.map((conversation, index) => {
+					if (conversation.messages && conversation.messages.length > 0) {
+						return {
+							[index]: conversation._id,
+						};
+					} else {
+						return { [index]: '' }; 
+					}
+				});
+				setMessagesID(messagesID);
 				setFirstMessages(messages);
 				console.log('done with messages');
 				console.log(messages);
@@ -195,7 +206,7 @@ const StudentDashboard = () => {
 					<ul className="space-y-2 font-medium">
 						<button onClick={newConvo}>New Conversation</button>
 						{firstMessages.map((conversation, idx) => (
-							<a key={idx} onClick={() => chatClick(conversation)}>
+							<a key={idx} onClick={() => chatClick(idx)}>
 								<li>{conversation.text}</li>
 							</a>
 						))}
