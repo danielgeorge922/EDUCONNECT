@@ -168,11 +168,11 @@ app.post('/conversation', async (req, res) => {
       id: req.body.id,
       user: req.body.user
     });
-    await conversation.save();
-    conversation.push({
+    conversation.messages.push({
       text: req.body.text
-    })
+    });
     user.conversations.push(conversation);
+    await conversation.save();
     res.status(201).send();
   } catch (error) {
     console.error(error);
@@ -186,18 +186,28 @@ app.post('/message', async (req, res) => {
       return res.status(401).send('Unauthorized');
     }
     const user = await User.findById(req.session.userId);
-  } catch {
-    
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Internal Server Error');
   }
 });
 
 app.get('/conversations', async (req, res) => {
   try {
-    const conversations = await Conversation.find();
-    res.status(200).json(conversations); 
+    if (req.session && req.session.userId) {
+      const user = await User.findById(req.session.userId);
+      if (user) {
+        res.json({ conversations: user.conversations });
+      } else {
+        res.status(404).send('User not found');
+      }
+    } else {
+      res.status(401).send('Unauthorized');
+    }
+  
   } catch (error) {
-    console.error('Error fetching conversations:', error);
-    res.status(500).send('Internal Server Error'); 
+    console.error(error);
+    res.status(500).send('Internal Server Error');
   }
 });
 

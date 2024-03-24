@@ -6,6 +6,7 @@ const StudentDashboard = () => {
   const [textBoxValue, setTextBoxValue] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const [userEmail, setUserEmail] = useState('');
+  const [conversations, setConversations] = useState({});
 
   const submitText = () => {
     setIsOpen(true);
@@ -13,6 +14,25 @@ const StudentDashboard = () => {
 
   const closeModal = () => {
     setIsOpen(false);
+  };
+
+  const fetchConversations = async () => {
+	try {
+		const response = await axios.get('http://localhost:5000/conversations');
+		setConversations(response.data);
+	} catch (error) {
+		console.error('Error fetching conversations:', error);
+	}
+};
+
+  const newConvo = async () => {
+	const response = await axios.post('http://localhost:5000/conversation', {
+		"id": 1,
+		"user": userEmail,
+		"text": textBoxValue,
+	}, {
+		withCredentials: true // Include cookies in the request
+	  });
   };
 
 	const signOut = async () => {
@@ -23,6 +43,22 @@ const StudentDashboard = () => {
 	};
 	
 	useEffect(() => {
+		const fetchConversations = async () => {
+			try {
+				const response = await fetch('http://localhost:5000/conversations', {
+					method: 'GET',
+					credentials: 'include',
+				});
+				if(!response.ok) {
+					throw new Error('Failed to fetch conversations');
+				}
+				const data = await response.json();
+				setConversations(data.conversations)
+			} catch (error) {
+                console.error('Error fetching email:', error);
+			}
+		}
+
         const fetchEmail = async () => {
             try {
                 const response = await fetch('http://localhost:5000/users/profile', {
@@ -39,6 +75,8 @@ const StudentDashboard = () => {
             }
         };
 
+		fetchConversations();
+		fetchConversations();
         fetchEmail();
 		return () => {
 			console.log("clean up");
@@ -139,6 +177,7 @@ const StudentDashboard = () => {
 			>
 				<div className="h-full px-3 pb-4 overflow-y-auto bg-white dark:bg-gray-800">
 					<ul className="space-y-2 font-medium">
+						<button onClick={newConvo}>CLICK HERE</button>
 						<li>Bruh Moment</li>
 						<li>Bruh Moment</li>
 					</ul>
