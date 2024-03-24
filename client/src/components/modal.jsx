@@ -1,8 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 const Modal = ({ isOpen, onClose }) => {
+    const [professors, setProfessors] = useState([]);
     const [selectedOption1, setSelectedOption1] = useState('');
     const [selectedOption2, setSelectedOption2] = useState('');
+
+    useEffect(() => {
+        const fetchProfessors = async () => {
+            try {
+                const response = await axios.get('http://localhost:5000/users/professors');
+                setProfessors(response.data);
+            } catch (error) {
+                console.error('Error fetching professors:', error);
+                // Handle error
+            }
+        };
+
+        fetchProfessors();
+    }, []);
 
     const handleOption1Change = (e) => {
         setSelectedOption1(e.target.value);
@@ -31,7 +47,9 @@ const Modal = ({ isOpen, onClose }) => {
                                 onChange={handleOption1Change}
                             >
                                 <option value="">Select Option</option>
-                                {/* Add options */}
+                                {professors.map(professor => (
+                                    <option key={professor._id} value={professor._id}>{professor.email}</option>
+                                ))}
                             </select>
                         </div>
                         <div className="mb-4">

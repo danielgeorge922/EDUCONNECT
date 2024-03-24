@@ -6,6 +6,7 @@ const TeacherDashboard = () => {
 	const [textBoxValue, setTextBoxValue] = useState('');
 	const [isOpen, setIsOpen] = useState(false);
 	const [conversations, setConversations] = useState([]);
+	const [userEmail, setUserEmail] = useState('');
 
 	useEffect(() => {
 		fetchConversations();
@@ -33,7 +34,31 @@ const TeacherDashboard = () => {
 			name: email,
 			password: password,
 		});
+		setUserEmail('');
 	};
+
+	useEffect(() => {
+		const fetchEmail = async () => {
+			try {
+				const response = await fetch('http://localhost:5000/users/profile', {
+					method: 'GET',
+					credentials: 'include',
+				});
+				if (!response.ok) {
+					throw new Error('Failed to fetch email');
+				}
+				const data = await response.json();
+				setUserEmail(data.email);
+			} catch (error) {
+				console.error('Error fetching email:', error);
+			}
+		};
+
+		fetchEmail();
+		return () => {
+			console.log('clean up');
+		};
+	}, []);
 
 	return (
 		<>
@@ -93,7 +118,7 @@ const TeacherDashboard = () => {
 										data-dropdown-toggle="dropdown-user"
 									>
 										<span className="sr-only">Open user menu</span>
-										Andrew Laskin
+										{userEmail}
 									</h1>
 									<img
 										src="https://upload.wikimedia.org/wikipedia/commons/e/e9/Octicons-sign-out.svg"

@@ -93,16 +93,6 @@ const SignUpPage = () => {
 								/>
 								<span className="ml-2">Student</span>
 							</label>
-							<label className="inline-flex items-center mr-6">
-								<input
-									type="radio"
-									className="form-radio text-blue-500"
-									value="professor"
-									checked={role === 'professor'}
-									onChange={() => setRole('professor')}
-								/>
-								<span className="ml-2">Professor</span>
-							</label>
 							<label className="inline-flex items-center">
 								<input
 									type="radio"
@@ -112,6 +102,16 @@ const SignUpPage = () => {
 									onChange={() => setRole('ta')}
 								/>
 								<span className="ml-2">TA</span>
+							</label>
+							<label className="inline-flex items-center mr-6">
+								<input
+									type="radio"
+									className="form-radio text-blue-500"
+									value="professor"
+									checked={role === 'professor'}
+									onChange={() => setRole('professor')}
+								/>
+								<span className="ml-2">Professor</span>
 							</label>
 						</div>
 					</div>

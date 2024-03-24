@@ -201,6 +201,15 @@ app.get('/conversations', async (req, res) => {
   }
 });
 
+app.get('/users/professors', async (req, res) => {
+  try {
+    const professors = await User.find({ role: 'professor' });
+    res.status(200).json(professors);
+  } catch (error) {
+    console.error('Error fetching professors:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
