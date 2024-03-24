@@ -3,91 +3,95 @@ import axios from 'axios';
 import Modal from '../components/modal';
 
 const StudentDashboard = () => {
-    const [textBoxValue, setTextBoxValue] = useState('');
-    const [isOpen, setIsOpen] = useState(false);
-    const [userEmail, setUserEmail] = useState('');
-    const [firstMessages, setFirstMessages] = useState([]);
+	const [textBoxValue, setTextBoxValue] = useState('');
+	const [isOpen, setIsOpen] = useState(false);
+	const [userEmail, setUserEmail] = useState('');
+	const [firstMessages, setFirstMessages] = useState([]);
 
-    const submitText = () => {
-        setIsOpen(true);
-    };
+	const submitText = () => {
+		setIsOpen(true);
+	};
 
-    const closeModal = () => {
-        setIsOpen(false);
-    };
+	const closeModal = () => {
+		setIsOpen(false);
+	};
 
-    const newConvo = async () => {
-        const response = await axios.post(
-            'http://localhost:5000/conversation',
-            {
-                id: 1,
-                user: userEmail,
-                text: textBoxValue,
-            },
-            {
-                withCredentials: true, // Include cookies in the request
-            }
-        );
-		console.log("done");
-    };
+	const newConvo = async () => {
+		const response = await axios.post(
+			'http://localhost:5000/conversation',
+			{
+				id: 1,
+				user: userEmail,
+				text: textBoxValue,
+			},
+			{
+				withCredentials: true, // Include cookies in the request
+			}
+		);
+		console.log('done');
+	};
 
-    const signOut = async () => {
-        const response = await axios.post('http://localhost:5000/users/logout', {
-            email: email,
-            password: password,
-        });
-    };
+	const signOut = async () => {
+		const response = await axios.post('http://localhost:5000/users/logout', {
+			email: email,
+			password: password,
+		});
+	};
 
-    useEffect(() => {
-        const fetchConversations = async () => {
-            try {
-                const response = await fetch('http://localhost:5000/conversations', {
-                    method: 'GET',
-                    credentials: 'include',
-                }, {
-					withCredentials: true
+	useEffect(() => {
+		const fetchConversations = async () => {
+			try {
+				const response = await fetch('http://localhost:5000/conversations', {
+					method: 'GET',
+					credentials: 'include',
 				});
-
-                if (!response.ok) {
-                    throw new Error('Failed to fetch conversations');
-                }
-                const data = await response.json();
-                // Extract the first message from each conversation
-				console.log(data.conversations);
-				console.log(data.conversations.forEach(function(obj) { console.log(obj.id); }));
-                const messages = data.conversations.map(conversation => conversation.messages[0].text);
-                setFirstMessages(messages);
-				console.log("done with messages");
-				console.log(messages);
-            } catch (error) {
-                console.error('Error fetching conversations:', error);
-            }
-        };
-
-        const fetchEmail = async () => {
-            try {
-                const response = await fetch('http://localhost:5000/users/profile', {
-                    method: 'GET',
-                    credentials: 'include',
-                });
-                if (!response.ok) {
-                    throw new Error('Failed to fetch email');
-                }
-                const data = await response.json();
-                setUserEmail(data.email);
-				console.log("done with email");
-            } catch (error) {
-                console.error('Error fetching email:', error);
-            }
-        };
-
-        fetchEmail();
-        fetchConversations();
+				if (!response.ok) {
+					throw new Error('Failed to fetch conversations');
+				}
+				const data = await response.json();
 		
-		return() => {
-			console.log("cleaning up");
-		}
-    }, []);
+				const messages = data.conversations.map((conversation) => {
+					if (conversation.messages && conversation.messages.length > 0) {
+						return {
+							text: conversation.messages[0].text,
+							// other properties you might want to access
+						};
+					} else {
+						return { text: '' }; // or any default value you prefer if there are no messages
+					}
+				});
+		
+				setFirstMessages(messages);
+				console.log('done with messages');
+				console.log(messages);
+			} catch (error) {
+				console.error('Error fetching conversations:', error);
+			}
+		};
+
+		const fetchEmail = async () => {
+			try {
+				const response = await fetch('http://localhost:5000/users/profile', {
+					method: 'GET',
+					credentials: 'include',
+				});
+				if (!response.ok) {
+					throw new Error('Failed to fetch email');
+				}
+				const data = await response.json();
+				setUserEmail(data.email);
+				console.log('done with email');
+			} catch (error) {
+				console.error('Error fetching email:', error);
+			}
+		};
+
+		fetchEmail();
+		fetchConversations();
+		return () => {
+			console.log('cleaning up');
+		};
+	}, []);
 
 	return (
 		<>
