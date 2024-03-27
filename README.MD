@@ -1,3 +1,5 @@
+Full-stack web application that uses Natural Langauge Processing to determine if a student's question can be determined using a pdf or docx copy of a class syllabus.
+
 Start Here 
 
 In root 
